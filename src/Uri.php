@@ -209,7 +209,8 @@ class Uri implements UriInterface
      */
     public function getPort()
     {
-        if (empty($this->port) && empty($this->getScheme())) {
+        $scheme = $this->getScheme();
+        if (empty($this->port) && empty($scheme)) {
             return null;
         }
         if (empty($this->port)) {

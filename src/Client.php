@@ -105,7 +105,7 @@ class Client
         return $this->responseHeaders;
     }
 
-    public function sendRequest(RequestInterface $request): ResponseInterface
+    public function sendRequest(RequestInterface $request)
     {
         curl_setopt($this->handle, CURLOPT_URL, (string) $request->getUri());
         curl_setopt($this->handle, CURLOPT_HEADERFUNCTION, [$this, 'headerFunction']);
@@ -122,7 +122,7 @@ class Client
         return $response;
     }
 
-    public function get($uri, $headers = []): ResponseInterface
+    public function get($uri, $headers = [])
     {
         $request = new Request('GET', $uri, $headers);
         print_r($request);
