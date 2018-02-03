@@ -1,0 +1,30 @@
+{
+    "name": "jorge-matricali/http-client",
+    "description": "Hola",
+    "type": "library",
+    "keywords": ["http", "client", "psr7", "curl", "wrapper"],
+    "require": {
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "squizlabs/php_codesniffer": "~1.5",
+        "satooshi/php-coveralls": "~1.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jorge Matricali",
+            "email": "jorgematricali@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/jorge-matricali/php-http-client/issues",
+        "source": "https://github.com/jorge-matricali/php-http-client"
+    }
+}
