@@ -21,8 +21,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace Matricali\Http\Client;
+namespace Matricali\Http;
 
-class Exception extends \Exception
+use PHPUnit\Framework\TestCase;
+
+/**
+ * @covers Matricali\Http\Client
+ */
+class ClientTest extends TestCase
 {
+    public function testEmptyUri()
+    {
+        $client = new Client();
+        $response = $client->get('https://www.google.com/');
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
