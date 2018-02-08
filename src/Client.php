@@ -120,8 +120,9 @@ class Client
 
         if ($request->getMethod() == 'POST') {
             curl_setopt($this->handle, CURLOPT_POST, true);
-            if (!empty($request->getBody())) {
-                curl_setopt($this->handle, CURLOPT_POSTFIELDS, $request->getBody());
+            $body = $request->getBody();
+            if (!empty($body)) {
+                curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
             }
         }
 

@@ -34,7 +34,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->get('http://www.google.com/');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertContains('private', $response->getHeader('Cache-Control'));
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
@@ -44,7 +44,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->head('http://www.google.com/');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertContains('private', $response->getHeader('Cache-Control'));
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertEmpty($response->getBody());
