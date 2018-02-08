@@ -45,9 +45,13 @@ use Psr\Http\Message\StreamInterface;
 class Response implements ResponseInterface
 {
     protected $statusCode;
+    protected $protocolVersion;
+    protected $headers;
+    protected $body;
 
-    public function __construct($body, $statusCode = 200, $headers = [])
+    public function __construct($body, $statusCode = 200, $headers = [], $protocolVersion = '1.1')
     {
+        $this->protocolVersion = $protocolVersion;
         $this->body = $body;
         $this->statusCode = $statusCode;
         $this->headers = $headers;

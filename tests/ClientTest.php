@@ -30,10 +30,33 @@ use PHPUnit\Framework\TestCase;
  */
 class ClientTest extends TestCase
 {
-    public function testEmptyUri()
+    public function testBasicGet()
     {
         $client = new Client();
-        $response = $client->get('https://www.google.com/');
-        $this->assertEquals(200, $response->getStatusCode());
+        $response = $client->get('http://www.google.com/');
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains('private', $response->getHeader('Cache-Control'));
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
+    }
+
+    public function testBasicHead()
+    {
+        $client = new Client();
+        $response = $client->head('http://www.google.com/');
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains('private', $response->getHeader('Cache-Control'));
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertEmpty($response->getBody());
+    }
+
+    public function testBasicPost()
+    {
+        $client = new Client();
+        $response = $client->post('http://www.google.com/', 'test=test&a=b');
+        $this->assertEquals(405, $response->getStatusCode());
+        // $this->assertContains('private', $response->getHeader('Cache-Control'));
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
     }
 }

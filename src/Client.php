@@ -35,6 +35,8 @@ class Client
     protected $handle = null;
     protected $responseHeader = '';
     protected $responseHeaders = [];
+    protected $statusCode;
+    protected $version;
 
     public function __construct()
     {
@@ -78,6 +80,7 @@ class Client
 
     protected function parseHeaders($lines)
     {
+
         if (empty($lines)) {
             return [];
         }
@@ -86,12 +89,13 @@ class Client
         } elseif (!is_array($lines)) {
             return false;
         }
+
         $status = [];
         if (preg_match('%^HTTP/(\d(?:\.\d)?)\s+(\d{3})\s?+(.+)?$%i', $lines[0], $status)) {
-            $this->status = array_shift($lines);
-            $this->version = $lines[1];
-            $this->statusCode = intval($lines[2]);
-            $this->statusMessage = isset($lines[3]) ? $lines[3] : '';
+            $this->status = $status[0];
+            $this->version = $status[1];
+            $this->statusCode = intval($status[2]);
+            $this->statusMessage = isset($status[3]) ? $status[3] : '';
         }
 
         foreach ($lines as $field) {
@@ -110,6 +114,21 @@ class Client
         curl_setopt($this->handle, CURLOPT_URL, (string) $request->getUri());
         curl_setopt($this->handle, CURLOPT_HEADERFUNCTION, [$this, 'headerFunction']);
 
+        if ($request->getMethod() == 'HEAD') {
+            curl_setopt($this->handle, CURLOPT_NOBODY, true);
+        }
+
+        if ($request->getMethod() == 'POST') {
+            curl_setopt($this->handle, CURLOPT_POST, true);
+            if (!empty($request->getBody())) {
+                curl_setopt($this->handle, CURLOPT_POSTFIELDS, $request->getBody());
+            }
+        }
+
+        if (in_array($request->getMethod(), ['PUT', 'PATCH', 'DELETE'])) {
+            curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, $request->getMethod());
+        }
+
         $ret = curl_exec($this->handle);
 
         if ($errno = curl_errno($this->handle)) {
@@ -118,14 +137,26 @@ class Client
 
         $this->parseHeaders($this->responseHeader);
 
-        $response = new Response($ret, $this->statusCode, $this->responseHeaders);
+        $response = new Response($ret, $this->statusCode, $this->responseHeaders, $this->version);
         return $response;
     }
 
     public function get($uri, $headers = [])
     {
         $request = new Request('GET', $uri, $headers);
-        print_r($request);
+        return $this->sendRequest($request);
+    }
+
+    public function head($uri, $headers = [])
+    {
+        $request = new Request('HEAD', $uri, $headers);
+        return $this->sendRequest($request);
+    }
+
+    public function post($uri, $body = '', $headers = [])
+    {
+        $request = new Request('POST', $uri, $headers);
+        $request->setBody($body);
         return $this->sendRequest($request);
     }
 }

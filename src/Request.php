@@ -361,6 +361,13 @@ class Request implements RequestInterface
     {
         return $this->body;
     }
+
+    public function setBody($body)
+    {
+        $this->body = $body;
+        return $this;
+    }
+
     /**
      * Return an instance with the specified message body.
      *
