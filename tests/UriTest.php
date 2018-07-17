@@ -23,13 +23,19 @@ THE SOFTWARE.
 
 namespace Matricali\Http;
 
+use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Matricali\Http\Uri
+ * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ *
+ * @group Uri
  */
 class UriTest extends TestCase
 {
+    /**
+     * @test
+     */
     public function testEmptyUri()
     {
         $uri = new Uri();
@@ -44,6 +50,9 @@ class UriTest extends TestCase
         $this->assertEquals('', $uri->getFragment());
     }
 
+    /**
+     * @test
+     */
     public function testBasicHttpUri()
     {
         $uri = new Uri('http://www.google.com/');
@@ -58,6 +67,9 @@ class UriTest extends TestCase
         $this->assertEquals('', $uri->getFragment());
     }
 
+    /**
+     * @test
+     */
     public function testHttpUriWithUsername()
     {
         $uri = new Uri('http://user@www.google.com/');
@@ -72,6 +84,9 @@ class UriTest extends TestCase
         $this->assertEquals('', $uri->getFragment());
     }
 
+    /**
+     * @test
+     */
     public function testHttpUriWithUsernameAndPassword()
     {
         $uri = new Uri('http://user:password@www.google.com/');
@@ -86,6 +101,9 @@ class UriTest extends TestCase
         $this->assertEquals('', $uri->getFragment());
     }
 
+    /**
+     * @test
+     */
     public function testHttpUriWithPathQueryAndFragmentHttps()
     {
         $uri = new Uri('https://www.google.com:9000/ExampleResource?a=1&b=2#top');
@@ -100,6 +118,9 @@ class UriTest extends TestCase
         $this->assertEquals('top', $uri->getFragment());
     }
 
+    /**
+     * @test
+     */
     public function testHttpUriWithPathQueryAndFragmentHttp()
     {
         $uri = new Uri('http://www.example.com:8080/ExamplePage.html?#anchor');
@@ -114,17 +135,231 @@ class UriTest extends TestCase
         $this->assertEquals('anchor', $uri->getFragment());
     }
 
+    /**
+     * @test
+     */
     public function testFtpUri()
     {
         $uri = new Uri('ftp://username:password@ftp.example.com:21');
-        $this->assertEquals('ftp://username:password@ftp.example.com:21', (string) $uri);
+        $this->assertEquals('ftp://username:password@ftp.example.com', (string) $uri);
         $this->assertEquals('ftp', $uri->getScheme());
         $this->assertEquals(21, $uri->getPort());
-        $this->assertEquals('username:password@ftp.example.com:21', $uri->getAuthority());
+        $this->assertEquals('username:password@ftp.example.com', $uri->getAuthority());
         $this->assertEquals('username:password', $uri->getUserInfo());
         $this->assertEquals('ftp.example.com', $uri->getHost());
         $this->assertEquals('', $uri->getPath());
         $this->assertEquals('', $uri->getQuery());
         $this->assertEquals('', $uri->getFragment());
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithInvalidScheme()
+    {
+        (new Uri('http://www.example.com/'))->withScheme(1);
+    }
+
+    /**
+     * @test
+     */
+    public function testWithScheme()
+    {
+        $value = 'http://www.example.com/';
+        $uri = new Uri($value);
+
+        $uriCloned = $uri->withScheme(Scheme::HTTPS);
+        $this->assertEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertEquals($uri->getAuthority(), $uriCloned->getAuthority());
+        $this->assertEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertNotEquals($value, (string) $uriCloned);
+        $this->assertNotEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals(Scheme::HTTPS, $uriCloned->getScheme());
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithInvalidHost()
+    {
+        (new Uri('http://www.example.com/'))->withHost(1);
+    }
+
+    /**
+     * @test
+     */
+    public function testWithHost()
+    {
+        $value = 'http://www.example.com/';
+        $uri = new Uri($value);
+
+        $host = 'www.clarovideo.com';
+        $uriCloned = $uri->withHost($host);
+        $this->assertEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertNotEquals($uri->getAuthority(), $uriCloned->getAuthority());
+        $this->assertEquals($host, $uriCloned->getAuthority());
+        $this->assertEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertNotEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertEquals($host, $uriCloned->getHost());
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithInvalidPort()
+    {
+        (new Uri('http://www.example.com/'))->withPort('value');
+    }
+
+    /**
+     * @test
+     */
+    public function testWithPort()
+    {
+        $value = 'http://www.example.com/';
+        $uri = new Uri($value);
+
+        $port = 8084;
+        $uriCloned = $uri->withPort($port);
+        $this->assertEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals($uri->getAuthority().":$port", $uriCloned->getAuthority());
+        $this->assertEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertNotEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertEquals($port, $uriCloned->getPort());
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithInvalidPath()
+    {
+        (new Uri('http://www.example.com/'))->withPath(1);
+    }
+
+    /**
+     * @test
+     */
+    public function testWithPath()
+    {
+        $value = 'http://www.example.com/';
+        $uri = new Uri($value);
+
+        $path = '/ExamplePage.html';
+        $uriCloned = $uri->withPath($path);
+        $this->assertEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals($uri->getAuthority(), $uriCloned->getAuthority());
+        $this->assertEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertNotEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertEquals($path, $uriCloned->getPath());
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithInvalidQuery()
+    {
+        (new Uri('http://www.example.com/'))->withQuery(1);
+    }
+
+    /**
+     * @test
+     */
+    public function testWithQuery()
+    {
+        $value = 'http://www.example.com/ExamplePage.html';
+        $uri = new Uri($value);
+
+        $query = 'a=1&b=2';
+        $uriCloned = $uri->withQuery($query);
+        $this->assertEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals($uri->getAuthority(), $uriCloned->getAuthority());
+        $this->assertEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertNotEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertEquals($query, $uriCloned->getQuery());
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithInvalidFragment()
+    {
+        (new Uri('http://www.example.com/'))->withFragment(1);
+    }
+
+    /**
+     * @test
+     */
+    public function testWithFragment()
+    {
+        $value = 'http://www.example.com/ExamplePage.html';
+        $uri = new Uri($value);
+
+        $fragment = 'anchor';
+        $uriCloned = $uri->withFragment($fragment);
+        $this->assertEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals($uri->getAuthority(), $uriCloned->getAuthority());
+        $this->assertEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertNotEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertEquals($fragment, $uriCloned->getFragment());
+    }
+
+    /**
+     * @test
+     */
+    public function testWithUserInfo()
+    {
+        $value = 'http://www.example.com/ExamplePage.html';
+        $uri = new Uri($value);
+
+        $user = 'user';
+        $password = 'password';
+        $uriCloned = $uri->withUserInfo($user, $password);
+        $this->assertEquals($uri->getScheme(), $uriCloned->getScheme());
+        $this->assertEquals($uri->getHost(), $uriCloned->getHost());
+        $this->assertEquals($uri->getPort(), $uriCloned->getPort());
+        $this->assertEquals($uri->getPath(), $uriCloned->getPath());
+        $this->assertEquals($uri->getQuery(), $uriCloned->getQuery());
+        $this->assertEquals($uri->getFragment(), $uriCloned->getFragment());
+        $this->assertNotEquals($uri->getUserInfo(), $uriCloned->getUserInfo());
+        $this->assertNotEquals($uri->getAuthority(), $uriCloned->getAuthority());
+        $this->assertEquals("$user:$password@www.example.com", $uriCloned->getAuthority());
+        $this->assertEquals("$user:$password", $uriCloned->getUserInfo());
+
     }
 }

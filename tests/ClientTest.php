@@ -24,12 +24,32 @@ THE SOFTWARE.
 namespace Matricali\Http;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 
 /**
- * @covers Matricali\Http\Client
+ * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ *
+ * @group Client
  */
 class ClientTest extends TestCase
 {
+    /**
+     * @test
+     *
+     * @expectedException Matricali\Http\Client\Exception
+     */
+    public function testSendRequest()
+    {
+        $client = new Client();
+        $request = $this->prophesize('Psr\Http\Message\RequestInterface');
+        $request->getUri()->willReturn('http://404.php.net/');
+        $request->getMethod()->willReturn(HttpMethod::GET);
+        $client->sendRequest($request->reveal());
+    }
+
+    /**
+     * @test
+     */
     public function testBasicGet()
     {
         $client = new Client();
@@ -40,6 +60,9 @@ class ClientTest extends TestCase
         $this->assertNotEmpty($response->getBody());
     }
 
+    /**
+     * @test
+     */
     public function testBasicHead()
     {
         $client = new Client();
@@ -50,13 +73,87 @@ class ClientTest extends TestCase
         $this->assertEmpty($response->getBody());
     }
 
+    /**
+     * @test
+     */
     public function testBasicPost()
     {
         $client = new Client();
         $response = $client->post('http://www.google.com/', 'test=test&a=b');
         $this->assertEquals(405, $response->getStatusCode());
-        // $this->assertContains('private', $response->getHeader('Cache-Control'));
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function testBasicPut()
+    {
+        $client = new Client();
+        $response = $client->put('http://www.google.com/', 'test=test&a=b');
+        $this->assertEquals(411, $response->getStatusCode());
+        $this->assertEquals('1.0', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function testBasicDelete()
+    {
+        $client = new Client();
+        $response = $client->delete('http://www.google.com/', 'test=test&a=b');
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function testBasicPatch()
+    {
+        $client = new Client();
+        $response = $client->patch('http://www.google.com/', 'test=test&a=b');
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function testClone()
+    {
+        $client = new Client();
+        $clientCloned = clone $client;
+        $this->assertEquals($client, $clientCloned);
+    }
+
+    /**
+     * @test
+     */
+    public function testParseHeaderEmpty()
+    {
+        $client = new Client();
+        $reflection = new \ReflectionClass($client);
+        $method = $reflection->getMethod('parseHeaders');
+        $method->setAccessible(true);
+
+        $this->assertEquals([], $method->invoke($client, ''));
+    }
+
+    /**
+     * @test
+     */
+    public function testParseHeaderNotArray()
+    {
+        $client = new Client();
+        $reflection = new \ReflectionClass($client);
+        $method = $reflection->getMethod('parseHeaders');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($client, 123));
     }
 }
