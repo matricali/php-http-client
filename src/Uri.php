@@ -94,6 +94,17 @@ class Uri implements UriInterface
             $this->fragment = $url['fragment'];
         }
     }
+
+    /**
+     * __clone.
+     *
+     * @return Uri
+     */
+    public function __clone()
+    {
+        return new self;
+    }
+
     /**
      * Retrieve the scheme component of the URI.
      *
@@ -312,7 +323,12 @@ class Uri implements UriInterface
      */
     public function withScheme($scheme)
     {
-
+        if (!Scheme::isValidValue($scheme)) {
+            throw new \InvalidArgumentException(sprintf('The scheme "%s" is not valid.', $scheme));
+        }
+        $clone = clone $this;
+        $clone->scheme = $scheme;
+        return $clone;
     }
 
     /**
@@ -331,7 +347,10 @@ class Uri implements UriInterface
      */
     public function withUserInfo($user, $password = null)
     {
-
+        $clone = clone $this;
+        $clone->user = $user;
+        $clone->pass = $password;
+        return $clone;
     }
 
     /**
@@ -348,7 +367,12 @@ class Uri implements UriInterface
      */
     public function withHost($host)
     {
-
+        if ($host !== null && !is_string($host)) {
+            throw new \InvalidArgumentException(sprintf('The host "%s" is not valid.', $host));
+        }
+        $clone = clone $this;
+        $clone->host = $host;
+        return $clone;
     }
 
     /**
@@ -370,7 +394,12 @@ class Uri implements UriInterface
      */
     public function withPort($port)
     {
-
+        if ($port != null && !is_int($port)) {
+            throw new \InvalidArgumentException(sprintf('The port "%s" is not valid.', $port));
+        }
+        $clone = clone $this;
+        $clone->port = $port;
+        return $clone;
     }
 
     /**
@@ -397,7 +426,12 @@ class Uri implements UriInterface
      */
     public function withPath($path)
     {
-
+        if ($path !== null && !is_string($path)) {
+            throw new \InvalidArgumentException(sprintf('The path "%s" is not valid.', $path));
+        }
+        $clone = clone $this;
+        $clone->path = $path;
+        return $clone;
     }
 
     /**
@@ -417,7 +451,12 @@ class Uri implements UriInterface
      */
     public function withQuery($query)
     {
-
+        if ($query !== null && !is_string($query)) {
+            throw new \InvalidArgumentException(sprintf('The query "%s" is not valid.', $query));
+        }
+        $clone = clone $this;
+        $clone->query = $query;
+        return $clone;
     }
 
     /**
@@ -436,7 +475,12 @@ class Uri implements UriInterface
      */
     public function withFragment($fragment)
     {
-
+        if ($fragment !== null && !is_string($fragment)) {
+            throw new \InvalidArgumentException(sprintf('The fragment "%s" is not valid.', $fragment));
+        }
+        $clone = clone $this;
+        $clone->fragment = $fragment;
+        return $clone;
     }
 
     /**
@@ -490,12 +534,6 @@ class Uri implements UriInterface
 
     private function getDefaultPort($scheme)
     {
-        switch ($scheme) {
-            case 'http':
-                return 80;
-            case 'https':
-                return 443;
-        }
-        return null;
+        return isset(Scheme::$defaultPort[$scheme]) ? Scheme::$defaultPort[$scheme] : null;
     }
 }

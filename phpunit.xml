@@ -26,7 +26,7 @@
 
     <logging>
         <log type="coverage-html" target="./build/coverage" charset="UTF-8"
-            title="Recordings Service"
+            title="PSR-7 HTTP Client (cURL)"
             yui="true" highlight="true"
             lowUpperBound="35" highLowerBound="70" />
         <log type="coverage-clover" target="./build/logs/clover.xml"/>
