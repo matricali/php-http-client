@@ -141,10 +141,10 @@ class UriTest extends TestCase
     public function testFtpUri()
     {
         $uri = new Uri('ftp://username:password@ftp.example.com:21');
-        $this->assertEquals('ftp://username:password@ftp.example.com:21', (string) $uri);
+        $this->assertEquals('ftp://username:password@ftp.example.com', (string) $uri);
         $this->assertEquals('ftp', $uri->getScheme());
         $this->assertEquals(21, $uri->getPort());
-        $this->assertEquals('username:password@ftp.example.com:21', $uri->getAuthority());
+        $this->assertEquals('username:password@ftp.example.com', $uri->getAuthority());
         $this->assertEquals('username:password', $uri->getUserInfo());
         $this->assertEquals('ftp.example.com', $uri->getHost());
         $this->assertEquals('', $uri->getPath());
