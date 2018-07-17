@@ -47,7 +47,7 @@ class HttpMethodTest extends TestCase
 
     public function setUp()
     {
-        $this->httpMethod = $this->getMockForAbstractClass(HttpMethod::class);
+        $this->httpMethod = $this->getMockForAbstractClass('Matricali\Http\HttpMethod');
     }
 
     /**
