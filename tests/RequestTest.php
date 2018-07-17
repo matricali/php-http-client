@@ -25,8 +25,6 @@ namespace Matricali\Http;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
 
 /**
  * @author Gabriel Polverini <gpolverini_ext@amco.mx>
@@ -163,7 +161,7 @@ class RequestTest extends TestCase
     public function testWithUri()
     {
         $uri = 'www.google.com';
-        $uriInterface = $this->prophesize(UriInterface::class);
+        $uriInterface = $this->prophesize('Psr\Http\Message\UriInterface');
         $uriInterface->__toString()->willReturn($uri);
         $request = new Request(HttpMethod::GET, $uri);
         $this->assertEquals($request->getUri(), (string) $request->withUri($uriInterface->reveal())->getUri());
@@ -359,7 +357,7 @@ class RequestTest extends TestCase
     public function testWithBody()
     {
         $body = '{"message":"text"}';
-        $stream = $this->prophesize(StreamInterface::class);
+        $stream = $this->prophesize('Psr\Http\Message\StreamInterface');
         $stream->__toString()->willReturn($body);
         $this->assertEquals($body, (new Request())->withBody($stream->reveal())->getBody());
     }

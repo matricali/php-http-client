@@ -24,7 +24,6 @@ THE SOFTWARE.
 namespace Matricali\Http;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * @author Gabriel Polverini <gpolverini_ext@amco.mx>
@@ -250,7 +249,7 @@ class ResponseTest extends TestCase
     public function testWithBody()
     {
         $body = '{"message":"text"}';
-        $stream = $this->prophesize(StreamInterface::class);
+        $stream = $this->prophesize('Psr\Http\Message\StreamInterface');
         $stream->__toString()->willReturn($body);
         $this->assertEquals($body, (new Response(''))->withBody($stream->reveal())->getBody());
     }
