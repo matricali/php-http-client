@@ -65,7 +65,9 @@ class Client implements ClientInterface
 
     public function __destruct()
     {
-        curl_close($this->handle);
+        if (is_resource($this->handle)) {
+            curl_close($this->handle);
+        }
     }
 
     /**
