@@ -25,7 +25,6 @@ namespace Matricali\Http;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
 
 /**
  * @author Gabriel Polverini <gpolverini_ext@amco.mx>
@@ -42,7 +41,7 @@ class ClientTest extends TestCase
     public function testSendRequest()
     {
         $client = new Client();
-        $request = $this->prophesize(RequestInterface::class);
+        $request = $this->prophesize('Psr\Http\Message\RequestInterface');
         $request->getUri()->willReturn('http://404.php.net/');
         $request->getMethod()->willReturn(HttpMethod::GET);
         $client->sendRequest($request->reveal());
