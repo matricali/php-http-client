@@ -35,5 +35,6 @@ abstract class Scheme extends Enum
     public static $defaultPort = array(
         self::HTTP => 80,
         self::HTTPS => 443,
+        self::FTP => 21
     );
 }
