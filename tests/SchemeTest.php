@@ -41,7 +41,7 @@ class SchemeTest extends TestCase
 
     public function setUp()
     {
-        $this->scheme = $this->getMockForAbstractClass(Scheme::class);
+        $this->scheme = $this->getMockForAbstractClass('Matricali\Http\Scheme');
     }
 
     /**

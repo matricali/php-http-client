@@ -102,7 +102,7 @@ class HttpStatusCodeTest extends TestCase
 
     public function setUp()
     {
-        $this->httpStatusCode = $this->getMockForAbstractClass(HttpStatusCode::class);
+        $this->httpStatusCode = $this->getMockForAbstractClass('Matricali\Http\HttpStatusCode');
     }
 
     /**
