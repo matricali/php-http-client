@@ -34,12 +34,10 @@ use Prophecy\Argument;
 class ClientAwareTraitTest extends TestCase
 {
     protected $trait;
-    protected $httpClient;
 
     public function setUp()
     {
         $this->trait = $this->getMockForTrait('Matricali\Http\ClientAwareTrait');
-        $this->httpClient = $this->createMock('Matricali\Http\ClientInterface');
     }
 
     /**
@@ -47,8 +45,8 @@ class ClientAwareTraitTest extends TestCase
      */
     public function testSetHttpClient()
     {
-        $this->assertNull($this->trait->setHttpClient($this->httpClient));
-        $this->trait->setHttpClient($this->httpClient);
+        $httpClient = new Client();
+        $this->assertNull($this->trait->setHttpClient($httpClient));
         $reflection = new \ReflectionProperty(get_class($this->trait), 'httpClient');
         $reflection->setAccessible(true);
 
