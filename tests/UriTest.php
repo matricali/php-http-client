@@ -27,7 +27,7 @@ use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ * @author Gabriel Polverini <polverini.gabriel@gmail.com>
  *
  * @group Uri
  */

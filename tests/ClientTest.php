@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
 /**
- * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ * @author Gabriel Polverini <polverini.gabriel@gmail.com>
  *
  * @group Client
  */
@@ -44,6 +44,7 @@ class ClientTest extends TestCase
         $request = $this->prophesize('Psr\Http\Message\RequestInterface');
         $request->getUri()->willReturn('http://404.php.net/');
         $request->getMethod()->willReturn(HttpMethod::GET);
+        $request->getHeaders()->willReturn([]);
         $client->sendRequest($request->reveal());
     }
 

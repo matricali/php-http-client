@@ -24,7 +24,7 @@ THE SOFTWARE.
 namespace Matricali\Http;
 
 /**
- * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ * @author Gabriel Polverini <polverini.gabriel@gmail.com>
  */
 abstract class HttpMethod extends Enum
 {

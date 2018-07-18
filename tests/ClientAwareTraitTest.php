@@ -23,18 +23,33 @@ THE SOFTWARE.
 
 namespace Matricali\Http;
 
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+
 /**
  * @author Gabriel Polverini <polverini.gabriel@gmail.com>
+ *
+ * @group Traits
  */
-abstract class Scheme extends Enum
+class ClientAwareTraitTest extends TestCase
 {
-    const HTTP  = 'http';
-    const HTTPS = 'https';
-    const FTP   = 'ftp';
+    protected $trait;
 
-    public static $defaultPort = array(
-        self::HTTP => 80,
-        self::HTTPS => 443,
-        self::FTP => 21
-    );
+    public function setUp()
+    {
+        $this->trait = $this->getMockForTrait('Matricali\Http\ClientAwareTrait');
+    }
+
+    /**
+     * @test
+     */
+    public function testSetHttpClient()
+    {
+        $httpClient = new Client();
+        $this->assertNull($this->trait->setHttpClient($httpClient));
+        $reflection = new \ReflectionProperty(get_class($this->trait), 'httpClient');
+        $reflection->setAccessible(true);
+
+        $this->assertInstanceOf('Matricali\Http\ClientInterface', $reflection->getValue($this->trait));
+    }
 }

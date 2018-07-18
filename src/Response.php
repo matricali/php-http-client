@@ -54,8 +54,12 @@ class Response extends AbstractMessage implements ResponseInterface
      * @param string $protocolVersion HTTP protocol version
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function __construct($body = '', $statusCode = 200, array $headers = array(), $protocolVersion = '1.1')
-    {
+    public function __construct(
+        $body = '',
+        $statusCode = HttpStatusCode::HTTP_OK,
+        array $headers = array(),
+        $protocolVersion = '1.1'
+    ) {
         $this->validateStatusCode($statusCode);
         parent::__construct($protocolVersion, $headers, $body);
         $this->statusCode = $statusCode;
