@@ -157,4 +157,20 @@ class ClientTest extends TestCase
 
         $this->assertFalse($method->invoke($client, 123));
     }
+
+    /**
+     * @test
+     */
+    public function testBasicPostWithHeaders()
+    {
+        $client = new Client();
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'text/xml;charset=UTF-8',
+        ];
+        $response = $client->post('http://www.google.com/', 'test=test&a=b', $headers);
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
+    }
 }
