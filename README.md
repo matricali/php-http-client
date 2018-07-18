@@ -3,7 +3,15 @@
 [![MIT licensed](https://img.shields.io/github/license/jorge-matricali/php-http-client.svg)](https://jorge-matricali.mit-license.org/2017)
 
 PSR-7 HTTP Client (cURL)
-================
+========================
 
-Note that this is not a HTTP protocol implementation of its own. It is merely a
-wrapper of libcurl that implements [PSR-7](http://www.php-fig.org/psr/psr-7/) HTTP message interface.
+Note that this is not an HTTP protocol implementation of its own. It is merely a
+wrapper of _libcurl_ that implements [PSR-7](http://www.php-fig.org/psr/psr-7/) HTTP message interface.
+
+## Contributing
+
+Contributions, issues, pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## License
+
+php-http-client is [MIT licensed](LICENSE.txt).
