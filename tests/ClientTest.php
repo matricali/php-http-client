@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
 /**
- * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ * @author Gabriel Polverini <polverini.gabriel@gmail.com>
  *
  * @group Client
  */
@@ -44,6 +44,7 @@ class ClientTest extends TestCase
         $request = $this->prophesize('Psr\Http\Message\RequestInterface');
         $request->getUri()->willReturn('http://404.php.net/');
         $request->getMethod()->willReturn(HttpMethod::GET);
+        $request->getHeaders()->willReturn([]);
         $client->sendRequest($request->reveal());
     }
 
@@ -155,5 +156,21 @@ class ClientTest extends TestCase
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($client, 123));
+    }
+
+    /**
+     * @test
+     */
+    public function testBasicPostWithHeaders()
+    {
+        $client = new Client();
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'text/xml;charset=UTF-8',
+        ];
+        $response = $client->post('http://www.google.com/', 'test=test&a=b', $headers);
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('1.1', $response->getProtocolVersion());
+        $this->assertNotEmpty($response->getBody());
     }
 }
