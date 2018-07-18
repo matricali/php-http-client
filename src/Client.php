@@ -157,18 +157,30 @@ class Client implements ClientInterface
         curl_setopt($this->handle, CURLOPT_URL, (string) $request->getUri());
         curl_setopt($this->handle, CURLOPT_HEADERFUNCTION, [$this, 'headerFunction']);
 
-        $method = $request->getMethod();
+        foreach ($request->getHeaders() as $name => $values) {
+            $headers[] = $name . ': ' . implode(', ', $values);
+        }
+        if (isset($headers)) {
+            curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
+        }
 
-        if ($method == HttpMethod::HEAD) {
-            curl_setopt($this->handle, CURLOPT_NOBODY, true);
-        } elseif ($method == HttpMethod::POST) {
-            curl_setopt($this->handle, CURLOPT_POST, true);
-            $body = $request->getBody();
-            if (!empty($body)) {
-                curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
-            }
-        } elseif (in_array($method, [HttpMethod::PUT, HttpMethod::PATCH, HttpMethod::DELETE])) {
-            curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, $method);
+        $method = $request->getMethod();
+        switch($method) {
+            case HttpMethod::HEAD:
+                curl_setopt($this->handle, CURLOPT_NOBODY, true);
+                break;
+            case HttpMethod::POST:
+                curl_setopt($this->handle, CURLOPT_POST, true);
+                $body = $request->getBody();
+                if (!empty($body)) {
+                    curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
+                }
+                break;
+            case HttpMethod::PUT:
+            case HttpMethod::PATCH:
+            case HttpMethod::DELETE:
+                curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, $method);
+                break;
         }
 
         $ret = curl_exec($this->handle);

@@ -23,18 +23,27 @@ THE SOFTWARE.
 
 namespace Matricali\Http;
 
+use Matricali\Http\ClientInterface as HttpClientInterface;
+
 /**
  * @author Gabriel Polverini <polverini.gabriel@gmail.com>
  */
-abstract class Scheme extends Enum
+trait ClientAwareTrait
 {
-    const HTTP  = 'http';
-    const HTTPS = 'https';
-    const FTP   = 'ftp';
+    /**
+     * The client instance.
+     *
+     * @var HttpClientInterface
+     */
+    protected $httpClient;
 
-    public static $defaultPort = array(
-        self::HTTP => 80,
-        self::HTTPS => 443,
-        self::FTP => 21
-    );
+    /**
+     * setHttpClient.
+     *
+     * @param HttpClientInterface $httpClient
+     */
+    public function setHttpClient(HttpClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
 }
