@@ -44,8 +44,12 @@ class Request extends AbstractMessage implements RequestInterface
      * @param string $body Body to send in the request.-
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function __construct($method = HttpMethod::GET, $uri = '', array $headers = array(), $body = null)
-    {
+    public function __construct(
+        $method = HttpMethod::GET,
+        $uri = '',
+        array $headers = array(),
+        $body = null
+    ) {
         $this->validateMethod($method);
         parent::__construct('1.1', $headers, $body);
         $this->method = $method;
