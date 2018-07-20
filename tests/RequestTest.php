@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
 /**
- * @author Gabriel Polverini <gpolverini_ext@amco.mx>
+ * @author Gabriel Polverini <polverini.gabriel@gmail.com>
  *
  * @group Request
  */
