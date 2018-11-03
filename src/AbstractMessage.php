@@ -35,19 +35,20 @@ abstract class AbstractMessage implements MessageInterface
     /**
      * AbstractMessage constructor.
      *
-     * @param string $protocolVersion.
-     * @param array $headers Header value(s).
-     * @param string $body.
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     * @param string $protocolVersion
+     * @param array  $headers         header value(s)
+     * @param string $body
+     *
+     * @throws \InvalidArgumentException for invalid HTTP methods
      */
-    public function __construct($protocolVersion = '1.1', array $headers = array(), $body = null)
+    public function __construct($protocolVersion = '1.1', array $headers = [], $body = null)
     {
-        if ($body !== null && !is_string($body)) {
+        if (null !== $body && !is_string($body)) {
             throw new \InvalidArgumentException('The body parameter must be of the string type');
         }
         $this->protocolVersion = $protocolVersion;
         $this->headers = [];
-        if ($headers !== null) {
+        if (null !== $headers) {
             foreach ($headers as $k => $v) {
                 if (!is_array($v)) {
                     $this->headers[$k] = array_map('trim', explode(',', $v));
@@ -60,26 +61,11 @@ abstract class AbstractMessage implements MessageInterface
     }
 
     /**
-     * Retrieves the index if a header exists by the given case-insensitive name.
-     *
-     * @param string $name Case-insensitive header field name.
-     * @return mixed Returns integer if any header names match the given header
-     *     name using a case-insensitive string comparison. Returns false if
-     *     no matching header name is found in the message.
-     */
-    protected function searchHeader($name)
-    {
-        $keysHeader = array_keys($this->headers);
-        $index = array_search(strtolower($name), array_map('strtolower', $keysHeader));
-        return $index !== false ? $keysHeader[$index] : $index;
-    }
-
-    /**
      * Retrieves the HTTP protocol version as a string.
      *
      * The string MUST contain only the HTTP version number (e.g., "1.1", "1.0").
      *
-     * @return string HTTP protocol version.
+     * @return string HTTP protocol version
      */
     public function getProtocolVersion()
     {
@@ -97,12 +83,14 @@ abstract class AbstractMessage implements MessageInterface
      * new protocol version.
      *
      * @param string $version HTTP protocol version
+     *
      * @return static
      */
     public function withProtocolVersion($version)
     {
         $clone = clone $this;
         $clone->protocolVersion = $version;
+
         return $clone;
     }
 
@@ -128,8 +116,8 @@ abstract class AbstractMessage implements MessageInterface
      * exact case in which headers were originally specified.
      *
      * @return string[][] Returns an associative array of the message's headers. Each
-     *     key MUST be a header name, and each value MUST be an array of strings
-     *     for that header.
+     *                    key MUST be a header name, and each value MUST be an array of strings
+     *                    for that header.
      */
     public function getHeaders()
     {
@@ -139,14 +127,15 @@ abstract class AbstractMessage implements MessageInterface
     /**
      * Checks if a header exists by the given case-insensitive name.
      *
-     * @param string $name Case-insensitive header field name.
+     * @param string $name case-insensitive header field name
+     *
      * @return bool Returns true if any header names match the given header
-     *     name using a case-insensitive string comparison. Returns false if
-     *     no matching header name is found in the message.
+     *              name using a case-insensitive string comparison. Returns false if
+     *              no matching header name is found in the message.
      */
     public function hasHeader($name)
     {
-        return $this->searchHeader($name) !== false;
+        return false !== $this->searchHeader($name);
     }
 
     /**
@@ -158,17 +147,19 @@ abstract class AbstractMessage implements MessageInterface
      * If the header does not appear in the message, this method MUST return an
      * empty array.
      *
-     * @param string $name Case-insensitive header field name.
+     * @param string $name case-insensitive header field name
+     *
      * @return string[] An array of string values as provided for the given
-     *    header. If the header does not appear in the message, this method MUST
-     *    return an empty array.
+     *                  header. If the header does not appear in the message, this method MUST
+     *                  return an empty array.
      */
     public function getHeader($name)
     {
         $key = $this->searchHeader($name);
-        if ($key !== false) {
+        if (false !== $key) {
             return $this->headers[$key];
         }
+
         return [];
     }
 
@@ -186,17 +177,19 @@ abstract class AbstractMessage implements MessageInterface
      * If the header does not appear in the message, this method MUST return
      * an empty string.
      *
-     * @param string $name Case-insensitive header field name.
+     * @param string $name case-insensitive header field name
+     *
      * @return string A string of values as provided for the given header
-     *    concatenated together using a comma. If the header does not appear in
-     *    the message, this method MUST return an empty string.
+     *                concatenated together using a comma. If the header does not appear in
+     *                the message, this method MUST return an empty string.
      */
     public function getHeaderLine($name)
     {
         $key = $this->searchHeader($name);
-        if ($key !== false) {
+        if (false !== $key) {
             return implode(', ', $this->headers[$key]);
         }
+
         return '';
     }
 
@@ -210,20 +203,23 @@ abstract class AbstractMessage implements MessageInterface
      * immutability of the message, and MUST return an instance that has the
      * new and/or updated header and value.
      *
-     * @param string $name Case-insensitive header field name.
-     * @param string|string[] $value Header value(s).
+     * @param string          $name  case-insensitive header field name
+     * @param string|string[] $value header value(s)
+     *
+     * @throws \InvalidArgumentException for invalid header names or values
+     *
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
      */
     public function withHeader($name, $value)
     {
         $key = $this->searchHeader($name);
         $value = is_array($value) ? $value : [$value];
-        if ($key !== false) {
+        if (false !== $key) {
             $name = $key;
         }
         $clone = clone $this;
         $clone->headers[$name] = $value;
+
         return $clone;
     }
 
@@ -238,21 +234,24 @@ abstract class AbstractMessage implements MessageInterface
      * immutability of the message, and MUST return an instance that has the
      * new header and/or value.
      *
-     * @param string $name Case-insensitive header field name to add.
-     * @param string|string[] $value Header value(s).
+     * @param string          $name  case-insensitive header field name to add
+     * @param string|string[] $value header value(s)
+     *
+     * @throws \InvalidArgumentException for invalid header names or values
+     *
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
      */
     public function withAddedHeader($name, $value)
     {
         $key = $this->searchHeader($name);
         $value = is_array($value) ? $value : [$value];
-        if ($key !== false) {
+        if (false !== $key) {
             $name = $key;
             $value = array_merge($this->headers[$key], $value);
         }
         $clone = clone $this;
         $clone->headers[$name] = $value;
+
         return $clone;
     }
 
@@ -265,23 +264,25 @@ abstract class AbstractMessage implements MessageInterface
      * immutability of the message, and MUST return an instance that removes
      * the named header.
      *
-     * @param string $name Case-insensitive header field name to remove.
+     * @param string $name case-insensitive header field name to remove
+     *
      * @return static
      */
     public function withoutHeader($name)
     {
         $clone = clone $this;
         $key = $this->searchHeader($name);
-        if ($key !== false) {
+        if (false !== $key) {
             unset($clone->headers[$key]);
         }
+
         return $clone;
     }
 
     /**
      * Gets the body of the message.
      *
-     * @return StreamInterface Returns the body as a stream.
+     * @return StreamInterface returns the body as a stream
      */
     public function getBody()
     {
@@ -297,14 +298,34 @@ abstract class AbstractMessage implements MessageInterface
      * immutability of the message, and MUST return a new instance that has the
      * new body stream.
      *
-     * @param StreamInterface $body Body.
+     * @param StreamInterface $body body
+     *
+     * @throws \InvalidArgumentException when the body is not valid
+     *
      * @return static
-     * @throws \InvalidArgumentException When the body is not valid.
      */
     public function withBody(StreamInterface $body)
     {
         $clone = clone $this;
         $clone->body = $body->__toString();
+
         return $clone;
+    }
+
+    /**
+     * Retrieves the index if a header exists by the given case-insensitive name.
+     *
+     * @param string $name case-insensitive header field name
+     *
+     * @return mixed Returns integer if any header names match the given header
+     *               name using a case-insensitive string comparison. Returns false if
+     *               no matching header name is found in the message.
+     */
+    protected function searchHeader($name)
+    {
+        $keysHeader = array_keys($this->headers);
+        $index = array_search(strtolower($name), array_map('strtolower', $keysHeader));
+
+        return false !== $index ? $keysHeader[$index] : $index;
     }
 }

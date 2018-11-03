@@ -107,7 +107,7 @@ abstract class HttpStatusCode extends Enum
      *
      * @var array
      */
-    public static $statusTexts = array(
+    public static $statusTexts = [
         self::HTTP_CONTINUE => 'Continue',
         self::HTTP_SWITCHING_PROTOCOLS => 'Switching Protocols',
         self::HTTP_PROCESSING => 'Processing',
@@ -170,5 +170,5 @@ abstract class HttpStatusCode extends Enum
         self::HTTP_LOOP_DETECTED => 'Loop Detected',
         self::HTTP_NOT_EXTENDED => 'Not Extended',
         self::HTTP_NETWORK_AUTHENTICATION_REQUIRED => 'Network Authentication Required',
-    );
+    ];
 }

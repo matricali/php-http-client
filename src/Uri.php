@@ -43,7 +43,7 @@ use Psr\Http\Message\UriInterface;
  * For server-side requests, the scheme will typically be discoverable in the
  * server parameters.
  *
- * @link http://tools.ietf.org/html/rfc3986 (the URI specification)
+ * @see http://tools.ietf.org/html/rfc3986 (the URI specification)
  */
 class Uri implements UriInterface
 {
@@ -102,7 +102,58 @@ class Uri implements UriInterface
      */
     public function __clone()
     {
-        return new self;
+        return new self();
+    }
+
+    /**
+     * Return the string representation as a URI reference.
+     *
+     * Depending on which components of the URI are present, the resulting
+     * string is either a full URI or relative reference according to RFC 3986,
+     * Section 4.1. The method concatenates the various components of the URI,
+     * using the appropriate delimiters:
+     *
+     * - If a scheme is present, it MUST be suffixed by ":".
+     * - If an authority is present, it MUST be prefixed by "//".
+     * - The path can be concatenated without delimiters. But there are two
+     *   cases where the path has to be adjusted to make the URI reference
+     *   valid as PHP does not allow to throw an exception in __toString():
+     *     - If the path is rootless and an authority is present, the path MUST
+     *       be prefixed by "/".
+     *     - If the path is starting with more than one "/" and no authority is
+     *       present, the starting slashes MUST be reduced to one.
+     * - If a query is present, it MUST be prefixed by "?".
+     * - If a fragment is present, it MUST be prefixed by "#".
+     *
+     * @see http://tools.ietf.org/html/rfc3986#section-4.1
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $ret = '';
+        if (!empty($this->scheme)) {
+            $ret .= $this->scheme.':';
+        }
+
+        $authority = $this->getAuthority();
+        if (!empty($authority)) {
+            $ret .= '//'.$authority;
+        }
+
+        if (!empty($this->path)) {
+            $ret .= $this->path;
+        }
+
+        if (!empty($this->query)) {
+            $ret .= '?'.$this->query;
+        }
+
+        if (!empty($this->fragment)) {
+            $ret .= '#'.$this->fragment;
+        }
+
+        return $ret;
     }
 
     /**
@@ -117,7 +168,8 @@ class Uri implements UriInterface
      * added.
      *
      * @see https://tools.ietf.org/html/rfc3986#section-3.1
-     * @return string The URI scheme.
+     *
+     * @return string the URI scheme
      */
     public function getScheme()
     {
@@ -140,7 +192,8 @@ class Uri implements UriInterface
      * scheme, it SHOULD NOT be included.
      *
      * @see https://tools.ietf.org/html/rfc3986#section-3.2
-     * @return string The URI authority, in "[user-info@]host[:port]" format.
+     *
+     * @return string the URI authority, in "[user-info@]host[:port]" format
      */
     public function getAuthority()
     {
@@ -153,9 +206,10 @@ class Uri implements UriInterface
         }
         if (!empty($this->port)) {
             if ($this->port != $this->getDefaultPort($this->scheme)) {
-                $authority .= ':' . $this->port;
+                $authority .= ':'.$this->port;
             }
         }
+
         return $authority;
     }
 
@@ -172,7 +226,7 @@ class Uri implements UriInterface
      * The trailing "@" character is not part of the user information and MUST
      * NOT be added.
      *
-     * @return string The URI user information, in "username[:password]" format.
+     * @return string the URI user information, in "username[:password]" format
      */
     public function getUserInfo()
     {
@@ -181,9 +235,10 @@ class Uri implements UriInterface
             $userInfo .= $this->user;
 
             if (!empty($this->pass)) {
-                $userInfo .= ':' . $this->pass;
+                $userInfo .= ':'.$this->pass;
             }
         }
+
         return $userInfo;
     }
 
@@ -196,7 +251,8 @@ class Uri implements UriInterface
      * Section 3.2.2.
      *
      * @see http://tools.ietf.org/html/rfc3986#section-3.2.2
-     * @return string The URI host.
+     *
+     * @return string the URI host
      */
     public function getHost()
     {
@@ -216,7 +272,7 @@ class Uri implements UriInterface
      * If no port is present, but a scheme is present, this method MAY return
      * the standard port for that scheme, but SHOULD return null.
      *
-     * @return null|int The URI port.
+     * @return int|null the URI port
      */
     public function getPort()
     {
@@ -227,6 +283,7 @@ class Uri implements UriInterface
         if (empty($this->port)) {
             return null;
         }
+
         return $this->port;
     }
 
@@ -253,7 +310,8 @@ class Uri implements UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-2
      * @see https://tools.ietf.org/html/rfc3986#section-3.3
-     * @return string The URI path.
+     *
+     * @return string the URI path
      */
     public function getPath()
     {
@@ -278,7 +336,8 @@ class Uri implements UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-2
      * @see https://tools.ietf.org/html/rfc3986#section-3.4
-     * @return string The URI query string.
+     *
+     * @return string the URI query string
      */
     public function getQuery()
     {
@@ -299,7 +358,8 @@ class Uri implements UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-2
      * @see https://tools.ietf.org/html/rfc3986#section-3.5
-     * @return string The URI fragment.
+     *
+     * @return string the URI fragment
      */
     public function getFragment()
     {
@@ -317,9 +377,11 @@ class Uri implements UriInterface
      *
      * An empty scheme is equivalent to removing the scheme.
      *
-     * @param string $scheme The scheme to use with the new instance.
-     * @return static A new instance with the specified scheme.
-     * @throws \InvalidArgumentException for invalid or unsupported schemes.
+     * @param string $scheme the scheme to use with the new instance
+     *
+     * @throws \InvalidArgumentException for invalid or unsupported schemes
+     *
+     * @return static a new instance with the specified scheme
      */
     public function withScheme($scheme)
     {
@@ -328,6 +390,7 @@ class Uri implements UriInterface
         }
         $clone = clone $this;
         $clone->scheme = $scheme;
+
         return $clone;
     }
 
@@ -341,15 +404,17 @@ class Uri implements UriInterface
      * user; an empty string for the user is equivalent to removing user
      * information.
      *
-     * @param string $user The user name to use for authority.
-     * @param null|string $password The password associated with $user.
-     * @return static A new instance with the specified user information.
+     * @param string      $user     the user name to use for authority
+     * @param string|null $password the password associated with $user
+     *
+     * @return static a new instance with the specified user information
      */
     public function withUserInfo($user, $password = null)
     {
         $clone = clone $this;
         $clone->user = $user;
         $clone->pass = $password;
+
         return $clone;
     }
 
@@ -361,17 +426,20 @@ class Uri implements UriInterface
      *
      * An empty host value is equivalent to removing the host.
      *
-     * @param string $host The hostname to use with the new instance.
-     * @return static A new instance with the specified host.
-     * @throws \InvalidArgumentException for invalid hostnames.
+     * @param string $host the hostname to use with the new instance
+     *
+     * @throws \InvalidArgumentException for invalid hostnames
+     *
+     * @return static a new instance with the specified host
      */
     public function withHost($host)
     {
-        if ($host !== null && !is_string($host)) {
+        if (null !== $host && !is_string($host)) {
             throw new \InvalidArgumentException(sprintf('The host "%s" is not valid.', $host));
         }
         $clone = clone $this;
         $clone->host = $host;
+
         return $clone;
     }
 
@@ -387,18 +455,21 @@ class Uri implements UriInterface
      * A null value provided for the port is equivalent to removing the port
      * information.
      *
-     * @param null|int $port The port to use with the new instance; a null value
-     *     removes the port information.
-     * @return static A new instance with the specified port.
-     * @throws \InvalidArgumentException for invalid ports.
+     * @param int|null $port the port to use with the new instance; a null value
+     *                       removes the port information
+     *
+     * @throws \InvalidArgumentException for invalid ports
+     *
+     * @return static a new instance with the specified port
      */
     public function withPort($port)
     {
-        if ($port != null && !is_int($port)) {
+        if (null != $port && !is_int($port)) {
             throw new \InvalidArgumentException(sprintf('The port "%s" is not valid.', $port));
         }
         $clone = clone $this;
         $clone->port = $port;
+
         return $clone;
     }
 
@@ -420,17 +491,20 @@ class Uri implements UriInterface
      * Users can provide both encoded and decoded path characters.
      * Implementations ensure the correct encoding as outlined in getPath().
      *
-     * @param string $path The path to use with the new instance.
-     * @return static A new instance with the specified path.
-     * @throws \InvalidArgumentException for invalid paths.
+     * @param string $path the path to use with the new instance
+     *
+     * @throws \InvalidArgumentException for invalid paths
+     *
+     * @return static a new instance with the specified path
      */
     public function withPath($path)
     {
-        if ($path !== null && !is_string($path)) {
+        if (null !== $path && !is_string($path)) {
             throw new \InvalidArgumentException(sprintf('The path "%s" is not valid.', $path));
         }
         $clone = clone $this;
         $clone->path = $path;
+
         return $clone;
     }
 
@@ -445,17 +519,20 @@ class Uri implements UriInterface
      *
      * An empty query string value is equivalent to removing the query string.
      *
-     * @param string $query The query string to use with the new instance.
-     * @return static A new instance with the specified query string.
-     * @throws \InvalidArgumentException for invalid query strings.
+     * @param string $query the query string to use with the new instance
+     *
+     * @throws \InvalidArgumentException for invalid query strings
+     *
+     * @return static a new instance with the specified query string
      */
     public function withQuery($query)
     {
-        if ($query !== null && !is_string($query)) {
+        if (null !== $query && !is_string($query)) {
             throw new \InvalidArgumentException(sprintf('The query "%s" is not valid.', $query));
         }
         $clone = clone $this;
         $clone->query = $query;
+
         return $clone;
     }
 
@@ -470,66 +547,19 @@ class Uri implements UriInterface
      *
      * An empty fragment value is equivalent to removing the fragment.
      *
-     * @param string $fragment The fragment to use with the new instance.
-     * @return static A new instance with the specified fragment.
+     * @param string $fragment the fragment to use with the new instance
+     *
+     * @return static a new instance with the specified fragment
      */
     public function withFragment($fragment)
     {
-        if ($fragment !== null && !is_string($fragment)) {
+        if (null !== $fragment && !is_string($fragment)) {
             throw new \InvalidArgumentException(sprintf('The fragment "%s" is not valid.', $fragment));
         }
         $clone = clone $this;
         $clone->fragment = $fragment;
+
         return $clone;
-    }
-
-    /**
-     * Return the string representation as a URI reference.
-     *
-     * Depending on which components of the URI are present, the resulting
-     * string is either a full URI or relative reference according to RFC 3986,
-     * Section 4.1. The method concatenates the various components of the URI,
-     * using the appropriate delimiters:
-     *
-     * - If a scheme is present, it MUST be suffixed by ":".
-     * - If an authority is present, it MUST be prefixed by "//".
-     * - The path can be concatenated without delimiters. But there are two
-     *   cases where the path has to be adjusted to make the URI reference
-     *   valid as PHP does not allow to throw an exception in __toString():
-     *     - If the path is rootless and an authority is present, the path MUST
-     *       be prefixed by "/".
-     *     - If the path is starting with more than one "/" and no authority is
-     *       present, the starting slashes MUST be reduced to one.
-     * - If a query is present, it MUST be prefixed by "?".
-     * - If a fragment is present, it MUST be prefixed by "#".
-     *
-     * @see http://tools.ietf.org/html/rfc3986#section-4.1
-     * @return string
-     */
-    public function __toString()
-    {
-        $ret = '';
-        if (!empty($this->scheme)) {
-            $ret .= $this->scheme . ':';
-        }
-
-        $authority = $this->getAuthority();
-        if (!empty($authority)) {
-            $ret .= '//' . $authority;
-        }
-
-        if (!empty($this->path)) {
-            $ret .= $this->path;
-        }
-
-        if (!empty($this->query)) {
-            $ret .= '?' . $this->query;
-        }
-
-        if (!empty($this->fragment)) {
-            $ret .= '#' . $this->fragment;
-        }
-        return $ret;
     }
 
     private function getDefaultPort($scheme)

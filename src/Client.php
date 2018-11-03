@@ -23,8 +23,8 @@ THE SOFTWARE.
 
 namespace Matricali\Http;
 
-use Psr\Http\Message\RequestInterface;
 use Matricali\Http\Client\Exception as ClientException;
+use Psr\Http\Message\RequestInterface;
 
 class Client implements ClientInterface
 {
@@ -50,16 +50,17 @@ class Client implements ClientInterface
         }
 
         $this->setOptions([
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_AUTOREFERER     => true,
-            CURLOPT_FOLLOWLOCATION  => true,
-            CURLOPT_MAXREDIRS       => 20,
-            CURLOPT_HEADER          => false,
-            CURLOPT_PROTOCOLS       => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_AUTOREFERER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 20,
+            CURLOPT_HEADER => false,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-            CURLOPT_USERAGENT       => 'jorge-matricali/php-http-client HTTP/' . self::VERSION . ' (libcurl)',
-            CURLOPT_CONNECTTIMEOUT  => 30,
-            CURLOPT_TIMEOUT         => 30,
+            CURLOPT_USERAGENT => 'jorge-matricali/php-http-client HTTP/'.
+                                        self::VERSION.' (libcurl)',
+            CURLOPT_CONNECTTIMEOUT => 30,
+            CURLOPT_TIMEOUT => 30,
         ]);
     }
 
@@ -71,29 +72,33 @@ class Client implements ClientInterface
     }
 
     /**
+     * __clone.
+     *
+     * @throws ClientException
+     *
+     * @return Client
+     */
+    public function __clone()
+    {
+        $client = new self();
+        $client->handle = curl_copy_handle($this->handle);
+
+        return $client;
+    }
+
+    /**
      * headerFunction.
      *
      * @param $handler
      * @param $line
+     *
      * @return int
      */
     public function headerFunction($handler, $line)
     {
         $this->responseHeader .= $line;
-        return strlen($line);
-    }
 
-    /**
-     * __clone.
-     *
-     * @return Client
-     * @throws ClientException
-     */
-    public function __clone()
-    {
-        $client = new self;
-        $client->handle = curl_copy_handle($this->handle);
-        return $client;
+        return strlen($line);
     }
 
     /**
@@ -109,48 +114,13 @@ class Client implements ClientInterface
     }
 
     /**
-     * parseHeaders.
-     *
-     * @param $lines
-     * @return array|bool
-     */
-    protected function parseHeaders($lines)
-    {
-        if (empty($lines)) {
-            return [];
-        }
-        if (is_string($lines)) {
-            $lines = array_filter(explode("\r\n", $lines));
-        } elseif (!is_array($lines)) {
-            return false;
-        }
-
-        $status = [];
-        if (preg_match('%^HTTP/(\d(?:\.\d)?)\s+(\d{3})\s?+(.+)?$%i', $lines[0], $status)) {
-            $this->status = $status[0];
-            $this->version = $status[1];
-            $this->statusCode = intval($status[2]);
-            $this->statusMessage = isset($status[3]) ? $status[3] : '';
-        }
-
-        foreach ($lines as $field) {
-            if (!is_array($field)) {
-                $field = array_map('trim', explode(':', $field, 2));
-            }
-            if (count($field) == 2) {
-                $this->responseHeaders[$field[0]] = $field[1];
-            }
-        }
-
-        return $this->responseHeaders;
-    }
-
-    /**
      * sendRequest.
      *
      * @param RequestInterface $request
-     * @return Response
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
     public function sendRequest(RequestInterface $request)
     {
@@ -158,14 +128,14 @@ class Client implements ClientInterface
         curl_setopt($this->handle, CURLOPT_HEADERFUNCTION, [$this, 'headerFunction']);
 
         foreach ($request->getHeaders() as $name => $values) {
-            $headers[] = $name . ': ' . implode(', ', $values);
+            $headers[] = $name.': '.implode(', ', $values);
         }
         if (isset($headers)) {
             curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
         }
 
         $method = $request->getMethod();
-        switch($method) {
+        switch ($method) {
             case HttpMethod::HEAD:
                 curl_setopt($this->handle, CURLOPT_NOBODY, true);
                 break;
@@ -191,100 +161,161 @@ class Client implements ClientInterface
 
         $this->parseHeaders($this->responseHeader);
 
-        return new Response($ret, $this->statusCode, $this->responseHeaders, $this->version);
+        return new Response(
+            $ret,
+            $this->statusCode,
+            $this->responseHeaders, $this->version
+        );
     }
 
     /**
-     * Create a GET request for the client
+     * Create a GET request for the client.
      *
-     * @param string $uri Resource URI.-
-     * @param array $headers HTTP headers.-
-     * @param array $options Options to apply to the request.-
-     * @return Response
+     * @param string $uri     Resource URI.-
+     * @param array  $headers HTTP headers.-
+     * @param array  $options Options to apply to the request.-
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
-    public function get($uri, array $headers = array(), array $options = array())
+    public function get($uri, array $headers = [], array $options = [])
     {
         $this->setOptions($options);
+
         return $this->sendRequest(new Request(HttpMethod::GET, $uri, $headers));
     }
 
     /**
-     * Create a HEAD request for the client
+     * Create a HEAD request for the client.
      *
-     * @param string $uri Resource URI.-
-     * @param array $headers HTTP headers.-
-     * @param array $options Options to apply to the request.-
-     * @return Response
+     * @param string $uri     Resource URI.-
+     * @param array  $headers HTTP headers.-
+     * @param array  $options Options to apply to the request.-
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
-    public function head($uri, array $headers = array(), array $options = array())
+    public function head($uri, array $headers = [], array $options = [])
     {
         $this->setOptions($options);
+
         return $this->sendRequest(new Request(HttpMethod::HEAD, $uri, $headers));
     }
 
     /**
-     * Create a POST request for the client
+     * Create a POST request for the client.
      *
-     * @param string $uri Resource URI.-
-     * @param string $body Body to send in the request.-
-     * @param array $headers HTTP headers.-
-     * @param array $options Options to apply to the request.-
-     * @return Response
+     * @param string $uri     Resource URI.-
+     * @param string $body    Body to send in the request.-
+     * @param array  $headers HTTP headers.-
+     * @param array  $options Options to apply to the request.-
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
-    public function post($uri, $body = '', array $headers = array(), array $options = array())
+    public function post($uri, $body = '', array $headers = [], array $options = [])
     {
         $this->setOptions($options);
+
         return $this->sendRequest(new Request(HttpMethod::POST, $uri, $headers, $body));
     }
 
     /**
-     * Create a PUT request for the client
+     * Create a PUT request for the client.
      *
-     * @param string $uri Resource URI.-
-     * @param string $body Body to send in the request.-
-     * @param array $headers HTTP headers.-
-     * @param array $options Options to apply to the request.-
-     * @return Response
+     * @param string $uri     Resource URI.-
+     * @param string $body    Body to send in the request.-
+     * @param array  $headers HTTP headers.-
+     * @param array  $options Options to apply to the request.-
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
-    public function put($uri, $body = '', array $headers = array(), array $options = array())
+    public function put($uri, $body = '', array $headers = [], array $options = [])
     {
         $this->setOptions($options);
+
         return $this->sendRequest(new Request(HttpMethod::PUT, $uri, $headers, $body));
     }
 
     /**
-     * Create a DELETE request for the client
+     * Create a DELETE request for the client.
      *
-     * @param string $uri Resource URI.-
-     * @param string $body Body to send in the request.-
-     * @param array $headers HTTP headers.-
-     * @param array $options Options to apply to the request.-
-     * @return Response
+     * @param string $uri     Resource URI.-
+     * @param string $body    Body to send in the request.-
+     * @param array  $headers HTTP headers.-
+     * @param array  $options Options to apply to the request.-
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
-    public function delete($uri, $body = '', array $headers = array(), array $options = array())
+    public function delete($uri, $body = '', array $headers = [], array $options = [])
     {
         $this->setOptions($options);
+
         return $this->sendRequest(new Request(HttpMethod::DELETE, $uri, $headers, $body));
     }
 
     /**
-     * Create a PATCH request for the client
+     * Create a PATCH request for the client.
      *
-     * @param string $uri Resource URI.-
-     * @param string $body Body to send in the request.-
-     * @param array $headers HTTP headers.-
-     * @param array $options Options to apply to the request.-
-     * @return Response
+     * @param string $uri     Resource URI.-
+     * @param string $body    Body to send in the request.-
+     * @param array  $headers HTTP headers.-
+     * @param array  $options Options to apply to the request.-
+     *
      * @throws ClientException
+     *
+     * @return Response
      */
-    public function patch($uri, $body = '', array $headers = array(), array $options = array())
+    public function patch($uri, $body = '', array $headers = [], array $options = [])
     {
         $this->setOptions($options);
+
         return $this->sendRequest(new Request(HttpMethod::PATCH, $uri, $headers, $body));
+    }
+
+    /**
+     * parseHeaders.
+     *
+     * @param $lines
+     *
+     * @return array|bool
+     */
+    protected function parseHeaders($lines)
+    {
+        if (empty($lines)) {
+            return [];
+        }
+        if (is_string($lines)) {
+            $lines = array_filter(explode("\r\n", $lines));
+        } elseif (!is_array($lines)) {
+            return false;
+        }
+
+        $status = [];
+        $expr = '%^HTTP/(\d(?:\.\d)?)\s+(\d{3})\s?+(.+)?$%i';
+        if (preg_match($expr, $lines[0], $status)) {
+            $this->status = $status[0];
+            $this->version = $status[1];
+            $this->statusCode = intval($status[2]);
+            $this->statusMessage = isset($status[3]) ? $status[3] : '';
+        }
+
+        foreach ($lines as $field) {
+            if (!is_array($field)) {
+                $field = array_map('trim', explode(':', $field, 2));
+            }
+            if (2 == count($field)) {
+                $this->responseHeaders[$field[0]] = $field[1];
+            }
+        }
+
+        return $this->responseHeaders;
     }
 }

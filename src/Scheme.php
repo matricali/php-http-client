@@ -28,13 +28,13 @@ namespace Matricali\Http;
  */
 abstract class Scheme extends Enum
 {
-    const HTTP  = 'http';
+    const HTTP = 'http';
     const HTTPS = 'https';
-    const FTP   = 'ftp';
+    const FTP = 'ftp';
 
-    public static $defaultPort = array(
+    public static $defaultPort = [
         self::HTTP => 80,
         self::HTTPS => 443,
-        self::FTP => 21
-    );
+        self::FTP => 21,
+    ];
 }
