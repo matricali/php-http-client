@@ -38,16 +38,17 @@ class Request extends AbstractMessage implements RequestInterface
      * method names are case-sensitive and thus implementations SHOULD NOT
      * modify the given string.
      *
-     * @param string $method Case-sensitive method.
-     * @param string $uri Resource URI.-
-     * @param array $headers Header value(s).
-     * @param string $body Body to send in the request.-
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     * @param string $method  case-sensitive method
+     * @param string $uri     Resource URI.-
+     * @param array  $headers header value(s)
+     * @param string $body    Body to send in the request.-
+     *
+     * @throws \InvalidArgumentException for invalid HTTP methods
      */
     public function __construct(
-        $method = HttpMethod::GET,
+        $method,
         $uri = '',
-        array $headers = array(),
+        array $headers = [],
         $body = null
     ) {
         $this->validateMethod($method);
@@ -66,24 +67,7 @@ class Request extends AbstractMessage implements RequestInterface
      */
     public function __clone()
     {
-        return new self;
-    }
-
-    /**
-     * Validate HTTP method
-     *
-     * While HTTP method names are typically all uppercase characters, HTTP
-     * method names are case-sensitive and thus implementations SHOULD NOT
-     * modify the given string.
-     *
-     * @param string $method Case-sensitive method.
-     * @throws \InvalidArgumentException for invalid HTTP methods.
-     */
-    protected function validateMethod($method)
-    {
-        if (!HttpMethod::isValidValue($method)) {
-            throw new \InvalidArgumentException(sprintf('The HTTP method "%s" is not valid.', $method));
-        }
+        return new self($this->method);
     }
 
     /**
@@ -108,6 +92,7 @@ class Request extends AbstractMessage implements RequestInterface
         if (empty($uri)) {
             return '/';
         }
+
         return $uri;
     }
 
@@ -123,21 +108,24 @@ class Request extends AbstractMessage implements RequestInterface
      * immutability of the message, and MUST return an instance that has the
      * changed request target.
      *
-     * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
+     * @see http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
+     *
      * @param mixed $requestTarget
+     *
      * @return static
      */
     public function withRequestTarget($requestTarget)
     {
         $clone = clone $this;
+
         return $clone;
     }
 
     /**
      * Retrieves the HTTP method of the request.
      *
-     * @return string Returns the request method.
+     * @return string returns the request method
      */
     public function getMethod()
     {
@@ -155,15 +143,18 @@ class Request extends AbstractMessage implements RequestInterface
      * immutability of the message, and MUST return an instance that has the
      * changed request method.
      *
-     * @param string $method Case-sensitive method.
+     * @param string $method case-sensitive method
+     *
+     * @throws \InvalidArgumentException for invalid HTTP methods
+     *
      * @return static
-     * @throws \InvalidArgumentException for invalid HTTP methods.
      */
     public function withMethod($method)
     {
         $this->validateMethod($method);
         $clone = clone $this;
         $clone->method = $method;
+
         return $clone;
     }
 
@@ -172,9 +163,10 @@ class Request extends AbstractMessage implements RequestInterface
      *
      * This method MUST return a UriInterface instance.
      *
-     * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @return UriInterface Returns a UriInterface instance
-     *     representing the URI of the request.
+     * @see http://tools.ietf.org/html/rfc3986#section-4.3
+     *
+     * @return UriInterface returns a UriInterface instance
+     *                      representing the URI of the request
      */
     public function getUri()
     {
@@ -206,15 +198,36 @@ class Request extends AbstractMessage implements RequestInterface
      * immutability of the message, and MUST return an instance that has the
      * new UriInterface instance.
      *
-     * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @param UriInterface $uri New request URI to use.
-     * @param bool $preserveHost Preserve the original state of the Host header.
+     * @see http://tools.ietf.org/html/rfc3986#section-4.3
+     *
+     * @param UriInterface $uri          new request URI to use
+     * @param bool         $preserveHost preserve the original state of the Host header
+     *
      * @return static
      */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
         $clone = clone $this;
         $clone->uri = $uri;
+
         return $clone;
+    }
+
+    /**
+     * Validate HTTP method.
+     *
+     * While HTTP method names are typically all uppercase characters, HTTP
+     * method names are case-sensitive and thus implementations SHOULD NOT
+     * modify the given string.
+     *
+     * @param string $method case-sensitive method
+     *
+     * @throws \InvalidArgumentException for invalid HTTP methods
+     */
+    protected function validateMethod($method)
+    {
+        if (!HttpMethod::isValidValue($method)) {
+            throw new \InvalidArgumentException(sprintf('The HTTP method "%s" is not valid.', $method));
+        }
     }
 }

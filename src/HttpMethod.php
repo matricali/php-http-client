@@ -28,13 +28,13 @@ namespace Matricali\Http;
  */
 abstract class HttpMethod extends Enum
 {
-    const GET     = 'GET';
-    const POST    = 'POST';
-    const PUT     = 'PUT';
-    const HEAD    = 'HEAD';
-    const DELETE  = 'DELETE';
-    const PATCH   = 'PATCH';
+    const GET = 'GET';
+    const POST = 'POST';
+    const PUT = 'PUT';
+    const HEAD = 'HEAD';
+    const DELETE = 'DELETE';
+    const PATCH = 'PATCH';
     const CONNECT = 'CONNECT';
     const OPTIONS = 'OPTIONS';
-    const TRACE   = 'TRACE';
+    const TRACE = 'TRACE';
 }
