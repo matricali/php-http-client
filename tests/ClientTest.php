@@ -26,7 +26,6 @@ namespace Matricali\Http\Tests;
 use Matricali\Http\Client;
 use Matricali\Http\HttpMethod;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * @group Client
@@ -55,7 +54,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->get('http://www.google.com/');
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertContains('private', $response->getHeader('Cache-Control'));
         $this->assertEquals('1.1', $response->getProtocolVersion());
@@ -69,7 +68,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->head('http://www.google.com/');
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertContains('private', $response->getHeader('Cache-Control'));
         $this->assertEquals('1.1', $response->getProtocolVersion());
@@ -83,7 +82,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->post('http://www.google.com/', 'test=test&a=b');
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
@@ -96,7 +95,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->put('http://www.google.com/', 'test=test&a=b');
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(411, $response->getStatusCode());
         $this->assertEquals('1.0', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
@@ -109,7 +108,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->delete('http://www.google.com/', 'test=test&a=b');
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
@@ -122,7 +121,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
         $response = $client->patch('http://www.google.com/', 'test=test&a=b');
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
@@ -163,7 +162,7 @@ class ClientTest extends TestCase
             'Content-Type' => 'text/xml;charset=UTF-8',
         ];
         $response = $client->post('http://www.google.com/', 'test=test&a=b', $headers);
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('1.1', $response->getProtocolVersion());
         $this->assertNotEmpty($response->getBody());
