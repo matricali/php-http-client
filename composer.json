@@ -5,7 +5,9 @@
   "keywords": ["http", "client", "psr7", "curl", "wrapper"],
   "require": {
     "php": ">=5.4.0",
-    "psr/http-message": "^1.0"
+    "ext-curl": "*",
+    "psr/http-message": "^1.0",
+    "psr/http-client": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.0",
@@ -13,9 +15,9 @@
     "satooshi/php-coveralls": "~1.0"
   },
   "autoload": {
-    "classmap": [
-      "src/"
-    ]
+    "psr-4": {
+      "Matricali\\Http\\": "src/"
+    }
   },
   "license": "MIT",
   "authors": [
