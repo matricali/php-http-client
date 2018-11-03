@@ -21,14 +21,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace Matricali\Http;
+namespace Matricali\Http\Tests;
 
-use MongoDB\BSON\ObjectId;
+use Matricali\Http\Scheme;
+use Matricali\Http\Uri;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @author Gabriel Polverini <polverini.gabriel@gmail.com>
- *
  * @group Uri
  */
 class UriTest extends TestCase
@@ -360,6 +359,5 @@ class UriTest extends TestCase
         $this->assertNotEquals($uri->getAuthority(), $uriCloned->getAuthority());
         $this->assertEquals("$user:$password@www.example.com", $uriCloned->getAuthority());
         $this->assertEquals("$user:$password", $uriCloned->getUserInfo());
-
     }
 }

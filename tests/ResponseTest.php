@@ -21,13 +21,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace Matricali\Http;
+namespace Matricali\Http\Tests;
 
+use Matricali\Http\HttpStatusCode;
+use Matricali\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @author Gabriel Polverini <polverini.gabriel@gmail.com>
- *
  * @group Response
  */
 class ResponseTest extends TestCase
