@@ -21,14 +21,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace Matricali\Http;
+namespace Matricali\Http\Tests;
 
+use Matricali\Http\HttpMethod;
+use Matricali\Http\Request;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 /**
- * @author Gabriel Polverini <polverini.gabriel@gmail.com>
- *
  * @group Request
  */
 class RequestTest extends TestCase
@@ -126,7 +125,7 @@ class RequestTest extends TestCase
      */
     public function testWithMethod()
     {
-        $request = new Request();
+        $request = new Request(HttpMethod::GET);
         $this->assertEquals($request->getMethod(), $request->withMethod(HttpMethod::GET)->getMethod());
     }
 
@@ -137,7 +136,7 @@ class RequestTest extends TestCase
      */
     public function testWithInvalidMethod()
     {
-        $request = new Request();
+        $request = new Request(HttpMethod::GET);
         $this->assertEquals($request->getMethod(), $request->withMethod('NONE')->getMethod());
     }
 
@@ -176,7 +175,7 @@ class RequestTest extends TestCase
      */
     public function testGetProtocolVersion()
     {
-        $request = new Request();
+        $request = new Request(HttpMethod::GET);
         $this->assertEquals('1.1', $request->getProtocolVersion());
         $protocolVersion = '1.0';
         $this->assertEquals($protocolVersion, $request->withProtocolVersion($protocolVersion)->getProtocolVersion());
@@ -189,7 +188,7 @@ class RequestTest extends TestCase
      */
     public function testWithProtocolVersion()
     {
-        $request = new Request();
+        $request = new Request(HttpMethod::GET);
         $protocolVersion = $request->getProtocolVersion();
         $this->assertEquals($protocolVersion, $request->withProtocolVersion('1.1')->getProtocolVersion());
         $this->assertNotEquals($protocolVersion, $request->withProtocolVersion('1.0')->getProtocolVersion());
@@ -202,7 +201,7 @@ class RequestTest extends TestCase
      */
     public function testGetHeaders()
     {
-        $this->assertTrue(is_array((new Request())->getHeaders()));
+        $this->assertTrue(is_array((new Request(HttpMethod::GET))->getHeaders()));
 
         $headers = [
             'Accept' => 'application/json',
@@ -359,6 +358,6 @@ class RequestTest extends TestCase
         $body = '{"message":"text"}';
         $stream = $this->prophesize('Psr\Http\Message\StreamInterface');
         $stream->__toString()->willReturn($body);
-        $this->assertEquals($body, (new Request())->withBody($stream->reveal())->getBody());
+        $this->assertEquals($body, (new Request(HttpMethod::GET))->withBody($stream->reveal())->getBody());
     }
 }
