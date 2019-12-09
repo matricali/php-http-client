@@ -1,7 +1,7 @@
-[![Latest stable release](https://img.shields.io/badge/dynamic/json.svg?label=stable&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fjorge-matricali%2Fphp-http-client%2Freleases%2Flatest&query=%24.name&colorB=blue)](https://github.com/jorge-matricali/php-http-client/releases/latest)
-[![Build Status](https://travis-ci.org/jorge-matricali/php-http-client.svg?branch=master)](:status:) [![Coverage Status](https://coveralls.io/repos/github/jorge-matricali/php-http-client/badge.svg?branch=master)](https://coveralls.io/github/jorge-matricali/php-http-client?branch=master)
-[![MIT licensed](https://img.shields.io/github/license/jorge-matricali/php-http-client.svg)](https://jorge-matricali.mit-license.org/2017)
-[![GitHub contributors](https://img.shields.io/github/contributors/jorge-matricali/php-http-client.svg)](https://github.com/jorge-matricali/php-http-client/graphs/contributors)
+[![Latest stable release](https://img.shields.io/badge/dynamic/json.svg?label=stable&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmatricali%2Fphp-http-client%2Freleases%2Flatest&query=%24.name&colorB=blue)](https://github.com/matricali/php-http-client/releases/latest)
+[![Build Status](https://travis-ci.org/matricali/php-http-client.svg?branch=master)](:status:) [![Coverage Status](https://coveralls.io/repos/github/matricali/php-http-client/badge.svg?branch=master)](https://coveralls.io/github/matricali/php-http-client?branch=master)
+[![MIT licensed](https://img.shields.io/github/license/matricali/php-http-client.svg)](https://matricali.mit-license.org/2017)
+[![GitHub contributors](https://img.shields.io/github/contributors/matricali/php-http-client.svg)](https://github.com/matricali/php-http-client/graphs/contributors)
 
 PSR-7 HTTP Client (cURL)
 ========================
