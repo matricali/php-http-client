@@ -15,12 +15,13 @@ interface ClientInterface
      * Create a GET request for the client.
      *
      * @param string $uri     Resource URI.-
+     * @param string $body    Body to send in the request.-
      * @param array  $headers HTTP headers.-
      * @param array  $options Options to apply to the request.-
      *
      * @return Response
      */
-    public function get($uri, array $headers = [], array $options = []);
+    public function get($uri, $body = '', array $headers = [], array $options = []);
 
     /**
      * Create a POST request for the client.

@@ -46,7 +46,9 @@ class Client implements ClientInterface
         $this->handle = curl_init();
 
         if (!is_resource($this->handle)) {
+            // @codeCoverageIgnoreStart
             throw new ClientException(curl_error($this->handle), 'curl');
+            // @codeCoverageIgnoreEnd
         }
 
         $this->setOptions([
@@ -172,6 +174,7 @@ class Client implements ClientInterface
      * Create a GET request for the client.
      *
      * @param string $uri     Resource URI.-
+     * @param string $body    Body to send in the request.-
      * @param array  $headers HTTP headers.-
      * @param array  $options Options to apply to the request.-
      *
@@ -179,11 +182,11 @@ class Client implements ClientInterface
      *
      * @return Response
      */
-    public function get($uri, array $headers = [], array $options = [])
+    public function get($uri, $body = '', array $headers = [], array $options = [])
     {
         $this->setOptions($options);
 
-        return $this->sendRequest(new Request(HttpMethod::GET, $uri, $headers));
+        return $this->sendRequest(new Request(HttpMethod::GET, $uri, $headers, $body));
     }
 
     /**
