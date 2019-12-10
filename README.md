@@ -15,7 +15,7 @@ wrapper of _libcurl_ that implements [PSR-7](http://www.php-fig.org/psr/psr-7/) 
 
 ## Installation
 ```
-composer require jorge-matricali/http-client
+composer require matricali/http-client
 ```
 
 ## Usage
