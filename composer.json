@@ -1,5 +1,5 @@
 {
-  "name": "jorge-matricali/http-client",
+  "name": "matricali/http-client",
   "description": "A wrapper of libcurl that implements PSR-7 HTTP message interface.",
   "type": "library",
   "keywords": ["http", "client", "psr7", "curl", "wrapper"],
@@ -33,7 +33,7 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/jorge-matricali/php-http-client/issues",
-    "source": "https://github.com/jorge-matricali/php-http-client"
+    "issues": "https://github.com/matricali/php-http-client/issues",
+    "source": "https://github.com/matricali/php-http-client"
   }
 }
