@@ -35,30 +35,10 @@ abstract class Enum
     private static $constCache = null;
 
     /**
-     * Obtiene una lista con las constantes definidas.
-     *
-     * @throws \ReflectionException
-     *
-     * @return mixed
-     */
-    protected static function getConstants()
-    {
-        if (self::$constCache == null) {
-            self::$constCache = [];
-        }
-        $calledClass = get_called_class();
-        if (!array_key_exists($calledClass, self::$constCache)) {
-            $reflect = new ReflectionClass($calledClass);
-            self::$constCache[$calledClass] = $reflect->getConstants();
-        }
-        return self::$constCache[$calledClass];
-    }
-
-    /**
      * Comprueba si el nombre dado corresponde a un elemento enumerado.
      *
      * @param string $name
-     * @param bool $strict
+     * @param bool   $strict
      *
      * @throws \ReflectionException
      *
@@ -106,5 +86,26 @@ abstract class Enum
         $values = self::getConstants();
 
         return in_array($name, array_keys($values)) ? $values[$name] : null;
+    }
+
+    /**
+     * Obtiene una lista con las constantes definidas.
+     *
+     * @throws \ReflectionException
+     *
+     * @return mixed
+     */
+    protected static function getConstants()
+    {
+        if (null == self::$constCache) {
+            self::$constCache = [];
+        }
+        $calledClass = get_called_class();
+        if (!array_key_exists($calledClass, self::$constCache)) {
+            $reflect = new ReflectionClass($calledClass);
+            self::$constCache[$calledClass] = $reflect->getConstants();
+        }
+
+        return self::$constCache[$calledClass];
     }
 }

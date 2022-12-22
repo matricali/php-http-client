@@ -48,16 +48,17 @@ class Response extends AbstractMessage implements ResponseInterface
     /**
      * Response constructor.
      *
-     * @param string $body Body to return in the response.-
-     * @param int $statusCode.
-     * @param array $headers Header value(s).
+     * @param string $body            Body to return in the response.-
+     * @param int    $statusCode
+     * @param array  $headers         header value(s)
      * @param string $protocolVersion HTTP protocol version
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     *
+     * @throws \InvalidArgumentException for invalid HTTP methods
      */
     public function __construct(
         $body = '',
         $statusCode = HttpStatusCode::HTTP_OK,
-        array $headers = array(),
+        array $headers = [],
         $protocolVersion = '1.1'
     ) {
         $this->validateStatusCode($statusCode);
@@ -73,23 +74,7 @@ class Response extends AbstractMessage implements ResponseInterface
      */
     public function __clone()
     {
-        return new self;
-    }
-
-    /**
-     * Validate the response status code.
-     *
-     * The status code is a 3-digit integer result code of the server's attempt
-     * to understand and satisfy the request.
-     *
-     * @param int $statusCode.
-     * @throws \InvalidArgumentException for invalid HTTP methods.
-     */
-    protected function validateStatusCode($statusCode)
-    {
-        if (!HttpStatusCode::isValidValue($statusCode)) {
-            throw new \InvalidArgumentException(sprintf('The HTTP status code "%s" is not valid.', $statusCode));
-        }
+        return new self();
     }
 
     /**
@@ -98,7 +83,7 @@ class Response extends AbstractMessage implements ResponseInterface
      * The status code is a 3-digit integer result code of the server's attempt
      * to understand and satisfy the request.
      *
-     * @return int Status code.
+     * @return int status code
      */
     public function getStatusCode()
     {
@@ -116,14 +101,17 @@ class Response extends AbstractMessage implements ResponseInterface
      * immutability of the message, and MUST return an instance that has the
      * updated status and reason phrase.
      *
-     * @link http://tools.ietf.org/html/rfc7231#section-6
-     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-     * @param int $code The 3-digit integer result code to set.
-     * @param string $reasonPhrase The reason phrase to use with the
-     *     provided status code; if none is provided, implementations MAY
-     *     use the defaults as suggested in the HTTP specification.
+     * @see http://tools.ietf.org/html/rfc7231#section-6
+     * @see http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
+     * @param int    $code         the 3-digit integer result code to set
+     * @param string $reasonPhrase the reason phrase to use with the
+     *                             provided status code; if none is provided, implementations MAY
+     *                             use the defaults as suggested in the HTTP specification
+     *
+     * @throws \InvalidArgumentException for invalid status code arguments
+     *
      * @return static
-     * @throws \InvalidArgumentException For invalid status code arguments.
      */
     public function withStatus($code, $reasonPhrase = '')
     {
@@ -137,6 +125,7 @@ class Response extends AbstractMessage implements ResponseInterface
         } elseif (isset(HttpStatusCode::$statusTexts[$code])) {
             $clone->reasonPhrase = HttpStatusCode::$statusTexts[$code];
         }
+
         return $clone;
     }
 
@@ -149,12 +138,30 @@ class Response extends AbstractMessage implements ResponseInterface
      * listed in the IANA HTTP Status Code Registry) for the response's
      * status code.
      *
-     * @link http://tools.ietf.org/html/rfc7231#section-6
-     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-     * @return string Reason phrase; must return an empty string if none present.
+     * @see http://tools.ietf.org/html/rfc7231#section-6
+     * @see http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
+     * @return string reason phrase; must return an empty string if none present
      */
     public function getReasonPhrase()
     {
         return $this->reasonPhrase;
+    }
+
+    /**
+     * Validate the response status code.
+     *
+     * The status code is a 3-digit integer result code of the server's attempt
+     * to understand and satisfy the request.
+     *
+     * @param int $statusCode
+     *
+     * @throws \InvalidArgumentException for invalid HTTP methods
+     */
+    protected function validateStatusCode($statusCode)
+    {
+        if (!HttpStatusCode::isValidValue($statusCode)) {
+            throw new \InvalidArgumentException(sprintf('The HTTP status code "%s" is not valid.', $statusCode));
+        }
     }
 }

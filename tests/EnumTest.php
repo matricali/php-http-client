@@ -23,31 +23,40 @@ THE SOFTWARE.
 
 namespace Matricali\Http\Tests;
 
-use Matricali\Http\Client;
+use Matricali\Http\HttpMethod;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group Traits
+ * @group Client
  */
-class ClientAwareTraitTest extends TestCase
+class EnumTest extends TestCase
 {
-    protected $trait;
-
-    public function setUp()
+    public function testGetByNameNoName()
     {
-        $this->trait = $this->getMockForTrait('Matricali\Http\ClientAwareTrait');
+        $res = HttpMethod::getByName('noName');
+        $this->assertEmpty($res);
     }
 
-    /**
-     * @test
-     */
-    public function testSetHttpClient()
+    public function testGetByNameName()
     {
-        $httpClient = new Client();
-        $this->assertNull($this->trait->setHttpClient($httpClient));
-        $reflection = new \ReflectionProperty(get_class($this->trait), 'httpClient');
-        $reflection->setAccessible(true);
-
-        $this->assertInstanceOf('Matricali\Http\ClientInterface', $reflection->getValue($this->trait));
+        $res = HttpMethod::getByName('GET');
+        $this->assertEquals($res, 'GET');
     }
+
+    public function testIsValidName()
+    {
+        // True
+        $res = HttpMethod::isValidName('GET');
+        $this->assertTrue($res);
+        // False
+        $res = HttpMethod::isValidName('GOT');
+        $this->assertFalse($res);
+        // True
+        $res = HttpMethod::isValidName('GET',true);
+        $this->assertTrue($res);
+        // False
+        $res = HttpMethod::isValidName('get',true);
+        $this->assertFalse($res);
+    }
+
 }
